@@ -142,13 +142,14 @@ function auth(data) {
 		init(socket, client);
 	} else {
 		var success = false;
+		var salt = bcrypt.genSaltSync(8);
 		_.each(manager.clients, function(client) {
 			if (data.token) {
 				if (data.token === client.token) {
 					success = true;
 				}
 			} else if (client.config.user === data.user) {
-				if (bcrypt.compareSync(data.password || "", client.config.password)) {
+				if (bcrypt.hashSync(data.password, salt) === bcrypt.hashSync(client.config.password, salt)) {
 					success = true;
 				}
 			}
